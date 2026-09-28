@@ -1,0 +1,8 @@
+project_id = "flux3-video-poc"
+
+# No login: auth is handled by @supabase/server inside each function.
+[functions.generate]
+verify_jwt = false
+
+[functions.poll]
+verify_jwt = false

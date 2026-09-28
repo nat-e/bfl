@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": { "includes": ["**", "!examples/supabase_react/supabase/functions/_shared/bfl-sdk"] },
+  "formatter": { "indentStyle": "space", "lineWidth": 100 },
+  "javascript": {
+    "formatter": { "quoteStyle": "single", "semicolons": "asNeeded" }
+  },
+  "linter": {
+    "rules": {
+      "a11y": { "useMediaCaption": "off" },
+      "style": { "useBlockStatements": "warn" }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["src/**"],
+      "linter": { "rules": { "correctness": { "noNodejsModules": "error" } } }
+    }
+  ]
+}

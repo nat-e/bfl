@@ -1,0 +1,23 @@
+{
+  "name": "flux3-video-poc",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "deploy": "node scripts/deploy.ts",
+    "sdk:update": "pnpm --dir ../.. build && cp ../../dist/index.d.mts supabase/functions/_shared/bfl-sdk/ && { echo '/* @ts-self-types=\"./index.d.mts\" */'; cat ../../dist/index.mjs; } > supabase/functions/_shared/bfl-sdk/index.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.1"
+  }
+}

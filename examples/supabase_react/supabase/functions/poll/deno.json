@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "@bfl/sdk": "../_shared/bfl-sdk/index.mjs",
+    "@opentelemetry/api": "npm:@opentelemetry/api@1"
+  }
+}
