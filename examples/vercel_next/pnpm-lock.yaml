@@ -92,7 +92,7 @@ packages:
     engines: {node: '>=18.0.0'}
 
   '@bfl/sdk@file:bfl-sdk-0.0.0.tgz':
-    resolution: {integrity: sha512-+dpyVl5Bw7n26LqwLx5wtJipu2Nrs2g+KjOIvVALy4KywA12el3T2x3rYYcA4sOZdrxzpuxvQnpmmAbw4LyBZw==, tarball: file:bfl-sdk-0.0.0.tgz}
+    resolution: {integrity: sha512-Mn2Cux+Cm8W7mT6FZFAJXZIRPmjPcyro4sofDbVIwRckNrxDtiwM/x+pgbbQJuU3Zqaq51HdHDgJgA1yCw3Urw==, tarball: file:bfl-sdk-0.0.0.tgz}
     version: 0.0.0
     engines: {node: '>=22'}
     peerDependencies:

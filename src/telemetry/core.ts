@@ -1,4 +1,10 @@
-import { type Attributes, SpanKind, SpanStatusCode, trace } from '@opentelemetry/api'
+import {
+  type Attributes,
+  SpanKind,
+  SpanStatusCode,
+  type TracerProvider,
+  trace,
+} from '@opentelemetry/api'
 import type { BflError } from '../errors.js'
 import type { JobHooks } from '../hooks.js'
 import type { BaseJobInput, FailedJob, MediaFile, ReadyJob } from '../job.js'
@@ -33,10 +39,16 @@ export type SpanData = {
  */
 export abstract class JobTelemetry<Input extends BaseJobInput> implements JobHooks<Input> {
   readonly #recordContent: boolean
+  readonly #tracerProvider: TracerProvider | undefined
   readonly #serverAddress: string
 
-  constructor(opts: { recordContent: boolean; serverAddress: string }) {
+  constructor(opts: {
+    recordContent: boolean
+    tracerProvider: TracerProvider | undefined
+    serverAddress: string
+  }) {
     this.#recordContent = opts.recordContent
+    this.#tracerProvider = opts.tracerProvider
     this.#serverAddress = opts.serverAddress
   }
 
@@ -136,8 +148,13 @@ export abstract class JobTelemetry<Input extends BaseJobInput> implements JobHoo
         ])
       }
     }
-    // Looked up for each span, so it works whenever the app sets up OpenTelemetry.
-    const span = trace.getTracer('@bfl/sdk', VERSION).startSpan(`generate_content ${data.model}`, {
+    // The global provider is looked up for each span, not kept from the constructor. Before the
+    // app sets up OpenTelemetry, the global is a placeholder from the SDK's own copy of
+    // @opentelemetry/api: it never gets the provider when the app sets up with another copy,
+    // and trace.disable() throws it away.
+    const provider = this.#tracerProvider ?? trace.getTracerProvider()
+    const tracer = provider.getTracer('@bfl/sdk', VERSION)
+    const span = tracer.startSpan(`generate_content ${data.model}`, {
       kind: SpanKind.CLIENT,
       // A Date, not a number: OpenTelemetry before 2.10 reads a number older than the
       // process start as time since the process started, e.g. for a job started elsewhere.

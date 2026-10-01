@@ -1,5 +1,4 @@
 import { LangfuseSpanProcessor } from 'npm:@langfuse/otel@5'
-import { trace } from 'npm:@opentelemetry/api@1'
 import { BasicTracerProvider } from 'npm:@opentelemetry/sdk-trace-base@2'
 
 declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void }
@@ -17,4 +16,6 @@ const keepAlive = {
   shutdown: async () => {},
 }
 
-trace.setGlobalTracerProvider(new BasicTracerProvider({ spanProcessors: [langfuse, keepAlive] }))
+// Passed to the SDK, not set as the global provider: Supabase Edge sets up its own global
+// provider first, which would get the SDK's spans instead of Langfuse.
+export const tracerProvider = new BasicTracerProvider({ spanProcessors: [langfuse, keepAlive] })

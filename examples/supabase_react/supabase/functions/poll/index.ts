@@ -1,6 +1,6 @@
-import '../_shared/tracing.ts' // sends the SDK's spans to Langfuse
 import { type SupabaseContext, withSupabase } from 'npm:@supabase/server@1'
 import { Bfl, type JobError } from '@bfl/sdk'
+import { tracerProvider } from '../_shared/tracing.ts' // sends the SDK's spans to Langfuse
 
 // Called by a cron job every 10 s while videos are pending (see the init migration).
 export default {
@@ -11,7 +11,7 @@ export default {
       return Response.json({ error: error.message }, { status: 500 })
     }
 
-    const bfl = new Bfl({ telemetry: { recordContent: true } })
+    const bfl = new Bfl({ telemetry: { recordContent: true, tracerProvider } })
     for (const video of videos) {
       const update = (fields: object) => db.from('videos').update(fields).eq('id', video.id)
       // Give up after an hour, with the last error seen.

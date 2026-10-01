@@ -6,6 +6,7 @@ import {
   TracerProvider,
 } from '@opentelemetry/sdk-trace'
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
+import { VERSION } from '../../src/version.js'
 import {
   client,
   failure,
@@ -126,5 +127,17 @@ describe('telemetry', () => {
     const { attributes } = await onlySpan()
     expect(attributes['gen_ai.input.messages']).toContain(INPUT.prompt)
     expect(attributes['gen_ai.output.messages']).toContain(VIDEO_URL)
+  })
+
+  test('writes spans through the tracerProvider passed in, not the global one', async () => {
+    const ownExporter = new InMemorySpanExporter()
+    const tracerProvider = new TracerProvider({
+      spanProcessors: [new SimpleSpanProcessor({ exporter: ownExporter })],
+    })
+    await client(fakeBfl(READY), { telemetry: { tracerProvider } }).videos.check(JOB)
+    await tracerProvider.forceFlush()
+    const [span] = ownExporter.getFinishedSpans()
+    expect(span?.instrumentationScope).toMatchObject({ name: '@bfl/sdk', version: VERSION })
+    expect(await finishedSpans()).toHaveLength(0)
   })
 })

@@ -1,3 +1,4 @@
+import { TracerProvider } from "@opentelemetry/api";
 //#region src/errors.d.ts
 /**
  * What went wrong:
@@ -319,6 +320,12 @@ type BflOptions = {
   telemetry?: {
     /** Also record the prompt and the video URL on spans. Default: `false`. */
     recordContent?: boolean;
+    /**
+     * Write spans through this provider instead of the global one, e.g. when the runtime
+     * registers its own global provider first (Supabase Edge, Deno with `OTEL_DENO`).
+     * Default: the global provider.
+     */
+    tracerProvider?: TracerProvider;
   };
 };
 /**

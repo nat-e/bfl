@@ -396,9 +396,11 @@ function getModelOrThrow(id) {
 */
 var JobTelemetry = class {
 	#recordContent;
+	#tracerProvider;
 	#serverAddress;
 	constructor(opts) {
 		this.#recordContent = opts.recordContent;
+		this.#tracerProvider = opts.tracerProvider;
 		this.#serverAddress = opts.serverAddress;
 	}
 	#getSpan(input, startedAt, media) {
@@ -477,7 +479,7 @@ var JobTelemetry = class {
 				finish_reason: finishReason
 			}]);
 		}
-		const span = trace.getTracer("@bfl/sdk", VERSION).startSpan(`generate_content ${data.model}`, {
+		const span = (this.#tracerProvider ?? trace.getTracerProvider()).getTracer("@bfl/sdk", VERSION).startSpan(`generate_content ${data.model}`, {
 			kind: SpanKind.CLIENT,
 			startTime: new Date(data.startedAt),
 			attributes
@@ -550,6 +552,7 @@ var Bfl = class {
 		});
 		const telemetry = {
 			recordContent: opts.telemetry?.recordContent ?? false,
+			tracerProvider: opts.telemetry?.tracerProvider,
 			serverAddress: new URL(host).hostname
 		};
 		this.videos = new Videos(http);

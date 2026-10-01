@@ -1,6 +1,6 @@
-import '../_shared/tracing.ts' // sends the SDK's spans to Langfuse
 import { withSupabase } from 'npm:@supabase/server@1'
 import { Bfl, BflError } from '@bfl/sdk'
+import { tracerProvider } from '../_shared/tracing.ts' // sends the SDK's spans to Langfuse
 
 // Starts a FLUX 3 video generation and saves it as a pending video.
 export default {
@@ -11,7 +11,7 @@ export default {
     }
 
     // With recordContent, the SDK's span also holds the prompt, so Langfuse shows it.
-    const bfl = new Bfl({ telemetry: { recordContent: true } })
+    const bfl = new Bfl({ telemetry: { recordContent: true, tracerProvider } })
     try {
       const job = await bfl.videos.fromText({ model: 'flux3', prompt, duration })
       // The job is plain JSON: poll reads it back from the row to check it.

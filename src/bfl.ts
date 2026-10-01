@@ -1,3 +1,4 @@
+import type { TracerProvider } from '@opentelemetry/api'
 import { BflError } from './errors.js'
 import { HttpClient } from './http.js'
 import { Videos } from './resources/videos.js'
@@ -21,6 +22,13 @@ export type BflOptions = {
   telemetry?: {
     /** Also record the prompt and the video URL on spans. Default: `false`. */
     recordContent?: boolean
+
+    /**
+     * Write spans through this provider instead of the global one, e.g. when the runtime
+     * registers its own global provider first (Supabase Edge, Deno with `OTEL_DENO`).
+     * Default: the global provider.
+     */
+    tracerProvider?: TracerProvider
   }
 }
 
@@ -58,6 +66,7 @@ export class Bfl {
     const http = new HttpClient({ apiKey, host, fetch: opts.fetch ?? globalThis.fetch })
     const telemetry = {
       recordContent: opts.telemetry?.recordContent ?? false,
+      tracerProvider: opts.telemetry?.tracerProvider,
       serverAddress: new URL(host).hostname,
     }
     this.videos = new Videos(http)
